@@ -1,0 +1,9 @@
+meridian:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('MERIDIAN_DATA', '../data') }}/warehouse/meridian.duckdb"
+      threads: 2
+      settings:
+        preserve_insertion_order: false

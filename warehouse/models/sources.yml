@@ -1,0 +1,19 @@
+version: 2
+
+# Bronze layer: Parquet files written by scripts/build_bronze.py.
+sources:
+  - name: bronze
+    description: Raw data converted to Parquet, unchanged in content.
+    meta:
+      external_location: "{{ env_var('MERIDIAN_DATA', '../data') }}/bronze/{name}.parquet"
+    tables:
+      - name: lending_club_loans
+        description: Lending Club accepted loans 2007-06 to 2018-12, one row per loan, 151 columns as delivered.
+      - name: paysim_transactions
+        description: PaySim synthetic mobile-money transactions (30 days, hourly steps), modelled on real African mobile-money logs.
+      - name: fred_series
+        description: Long-format FRED macro series (series_id, observation_date, value).
+      - name: sec_sub
+        description: SEC Financial Statement Data Sets, submission header per filing (company, SIC, form, period).
+      - name: sec_num
+        description: SEC Financial Statement Data Sets, one row per reported XBRL value.

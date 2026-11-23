@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: dim_month
+    description: Monthly calendar dimension.
+    columns:
+      - name: month
+        data_tests: [unique, not_null]
+  - name: dim_risk_grade
+    description: Sub-grades ranked from safest to riskiest.
+    columns:
+      - name: sub_grade
+        data_tests: [unique, not_null]
+  - name: dim_geography
+    description: US states with census region.
+    columns:
+      - name: state_code
+        data_tests: [unique, not_null]
+  - name: fct_loans
+    description: Loan-level fact table. Grain = one funded loan.
+    columns:
+      - name: loan_id
+        data_tests: [unique, not_null]
+      - name: issue_month
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_month'), field: month}}
+      - name: sub_grade
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_risk_grade'), field: sub_grade}}
+      - name: state_code
+        data_tests:
+          - relationships: {arguments: {to: ref('dim_geography'), field: state_code}}
+  - name: mart_macro_monthly
+    description: Monthly macro drivers, quarterly series carried forward.
+    columns:
+      - name: month
+        data_tests: [unique, not_null]
+  - name: mart_portfolio_monthly
+    description: Portfolio KPIs by origination month with macro context.
+    columns:
+      - name: month
+        data_tests: [unique, not_null]
+  - name: mart_vintage_curves
+    description: Cumulative default rate by origination quarter and months on book.
+  - name: mart_pd_features
+    description: PD modelling table. Application-time features, target and split only.
+    columns:
+      - name: loan_id
+        data_tests: [unique, not_null]
+  - name: mart_lgd_base
+    description: Seasoned defaults for LGD and EAD modelling.
+  - name: mart_fraud_by_type
+    description: Fraud exposure and rule-engine detection by transaction type.
+  - name: mart_fraud_hourly
+    description: Hourly transaction and fraud volumes.
+  - name: mart_supplier_health
+    description: Altman Z'' financial health score and zone per US public company.
+    columns:
+      - name: company_cik
+        data_tests: [unique, not_null]
+      - name: altman_zone
+        data_tests:
+          - accepted_values: {arguments: {values: ['Safe', 'Grey', 'Distress', 'Unscored']}}

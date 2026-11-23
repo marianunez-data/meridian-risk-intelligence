@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: int_loans__outcomes
+    description: >
+      Single definition of default, exposure, loss and the out-of-time split.
+      Bad = charged off within 24 months of issue, only defined when 24 months
+      have been observed.
+    columns:
+      - name: loan_id
+        data_tests: [unique, not_null]
+      - name: dataset_split
+        data_tests:
+          - not_null
+          - accepted_values: {arguments: {values: ['train', 'validation', 'test_oot', 'monitoring']}}
+      - name: loss_given_default
+        description: 1 minus net recoveries over exposure at default, bounded to [0, 1].
+
+  - name: int_sec__supplier_financials
+    description: Latest FY annual figures per company, pivoted wide.
+    columns:
+      - name: company_cik
+        data_tests: [unique, not_null]

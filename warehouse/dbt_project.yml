@@ -1,0 +1,33 @@
+name: meridian
+version: "1.0.0"
+config-version: 2
+profile: meridian
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  snapshot_date: "2019-03-01"          # last payment month observed in the data
+  performance_window_months: 24        # bad = default within 24 months of issue
+  charge_off_lag_months: 5             # Lending Club charges off at ~150 days past due
+  recovery_seasoning_months: 12        # only trust LGD once recoveries had 12 months
+
+models:
+  meridian:
+    staging:
+      +schema: silver
+      +materialized: view
+    intermediate:
+      +schema: silver
+      +materialized: table
+    marts:
+      +schema: gold
+      +materialized: table
+
+seeds:
+  meridian:
+    +schema: reference

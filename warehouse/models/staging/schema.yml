@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_lending_club__loans
+    description: One typed, renamed row per funded Lending Club loan. Footer rows removed.
+    columns:
+      - name: loan_id
+        description: Lending Club loan identifier.
+        data_tests: [unique, not_null]
+      - name: issue_month
+        data_tests: [not_null]
+      - name: term_months
+        data_tests:
+          - accepted_values: {arguments: {values: [36, 60]}}
+      - name: grade
+        data_tests:
+          - accepted_values: {arguments: {values: ['A', 'B', 'C', 'D', 'E', 'F', 'G']}}
+      - name: loan_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Fully Paid', 'Current', 'Charged Off', 'Late (31-120 days)',
+                         'In Grace Period', 'Late (16-30 days)', 'Default']
+
+  - name: stg_fred__series
+    description: FRED observations with a monthly key.
+    columns:
+      - name: series_id
+        data_tests: [not_null]
+
+  - name: stg_paysim__transactions
+    description: PaySim mobile-money transactions. One simulated hour per step.
+    columns:
+      - name: transaction_id
+        data_tests: [unique, not_null]
+      - name: transaction_type
+        data_tests:
+          - accepted_values: {arguments: {values: ['payment', 'transfer', 'cash_out', 'cash_in', 'debit']}}
+
+  - name: stg_sec__submissions
+    description: FY 10-K filings by US companies.
+    columns:
+      - name: filing_id
+        data_tests: [unique, not_null]
+
+  - name: stg_sec__financial_values
+    description: Consolidated USD XBRL values for the tags used in supplier scoring.
