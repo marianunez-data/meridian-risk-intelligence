@@ -1,0 +1,33 @@
+# Data (recreated by `make data bronze warehouse`)
+data/raw/
+data/bronze/
+data/warehouse/
+data/features/
+data/app/
+
+# The compact app warehouse IS committed: app/data/meridian_app.duckdb
+
+# dbt
+warehouse/target/
+warehouse/dbt_packages/
+warehouse/logs/
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.streamlit/secrets.toml
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,13 @@
+# Full development environment: data pipeline, notebooks, tests.
+-r requirements.txt
+dbt-core==1.12.7
+dbt-duckdb==1.11.1
+jupyter
+nbconvert==7.17.2
+nbformat
+ipykernel
+matplotlib==3.11.2
+optuna==5.1.0
+shap==0.54.1
+pytest==9.1.1
+ruff
