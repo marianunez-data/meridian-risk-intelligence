@@ -1,0 +1,15 @@
+dimension,check,rows_affected,severity,decision
+Uniqueness,Duplicate loan ids,0.0,Pass,None needed
+Uniqueness,Source footer rows without a loan id,33.0,Low,Removed in staging; reconciliation test
+Consistency,"FICO bounds, credit-line dates, funded vs requested",0.0,Pass,None needed
+Consistency,Instalment differs from annuity formula by over 1%,714.0,Low,"Kept; 0.03% of loans, likely post-issue modifications"
+Validity,"Zero income (1,667) or DTI above 100% (2,561), all joint applications",,High,Fixed in warehouse: household figures for joint apps
+Validity,"Extreme income, balances and ratios",,Medium,Winsorise at train p0.1 / p99.9
+Validity,Home ownership ANY / NONE / OTHER,1232.0,Low,Grouped into OTHER
+Completeness,Bureau fields absent before 2012 (structural),39786.0,High,Train on 2012+ originations
+Completeness,Months since delinquency / public record (informative),,Medium,"Keep missing, add flags, own WoE bin"
+Completeness,Employment years missing (informative),,Medium,Missing flag; own WoE bin
+Completeness,"DTI, utilisation small gaps (random)",,Low,Median imputation fitted on train
+Timeliness,Immature outcomes for 2017 to 2018 loans,938821.0,High,24-month target; monitoring population
+Leakage,20 post-origination fields,,Critical,Excluded by construction; dbt test
+Leakage,Lending Club grade and rate (another model's output),,High,"Benchmark only, not a feature"
