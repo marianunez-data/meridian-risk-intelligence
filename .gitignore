@@ -8,6 +8,7 @@ data/app/
 # The compact app warehouse IS committed: app/data/meridian_app.duckdb
 
 # dbt
+warehouse/.user.yml
 warehouse/target/
 warehouse/dbt_packages/
 warehouse/logs/
@@ -31,3 +32,6 @@ venv/
 .DS_Store
 .vscode/
 .idea/
+
+# Private drafts (CV bullets, LinkedIn post)
+docs/portfolio_page.md

@@ -28,6 +28,8 @@ def copy(con: duckdb.DuckDBPyConnection, select_sql: str, name: str) -> None:
 
 def main(only: list[str] | None = None) -> None:
     BRONZE.mkdir(parents=True, exist_ok=True)
+    config.WAREHOUSE_PATH.parent.mkdir(parents=True, exist_ok=True)  # dbt needs the folder to exist
+    (config.DATA_DIR / "features").mkdir(parents=True, exist_ok=True)
     con = duckdb.connect()
     con.execute("SET preserve_insertion_order = false")
     want = lambda name: only is None or name in only  # noqa: E731

@@ -7,7 +7,7 @@ All data is public. The full raw files (about 3.2 GB) are **not stored in this r
 | Full raw data | `data/raw/` (git-ignored) | `python scripts/download_data.py` |
 | Bronze, warehouse and features | `data/bronze/`, `data/warehouse/`, `data/features/` (git-ignored) | `make bronze warehouse notebooks` |
 | Small samples to browse | `data/sample/` (committed) | Open in Excel or pandas |
-| App warehouse used by the dashboard | `app/data/meridian_app.duckdb` (committed, 24 MB) | `python scripts/export_app_data.py` |
+| App warehouse used by the dashboard | `app/data/meridian_app.duckdb` (committed, 27 MB) | `python scripts/export_app_data.py` |
 
 ## Sources
 
