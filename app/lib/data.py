@@ -18,19 +18,37 @@ MODELS = ROOT / "models"
 DOCS = ROOT / "docs"
 
 
+def _version(*paths: Path) -> tuple:
+    """Modification time and size of each file. Part of every cache key, so a redeploy that ships a new
+    warehouse or model file is picked up immediately instead of serving numbers cached from the old one."""
+    return tuple((p.stat().st_mtime_ns, p.stat().st_size) for p in paths)
+
+
 @st.cache_resource(show_spinner=False)
-def connection() -> duckdb.DuckDBPyConnection:
+def _connection(version: tuple) -> duckdb.DuckDBPyConnection:
     return duckdb.connect(str(APP_DB), read_only=True)
 
 
+def connection() -> duckdb.DuckDBPyConnection:
+    return _connection(_version(APP_DB))
+
+
 @st.cache_data(show_spinner=False, ttl=None)
-def q(sql: str, params: tuple | None = None) -> pd.DataFrame:
-    cur = connection().cursor()
+def _q(sql: str, params: tuple | None, version: tuple) -> pd.DataFrame:
+    cur = _connection(version).cursor()
     return cur.execute(sql, list(params) if params else None).df()
 
 
-@st.cache_resource(show_spinner=False)
+def q(sql: str, params: tuple | None = None) -> pd.DataFrame:
+    return _q(sql, params, _version(APP_DB))
+
+
 def models() -> dict:
+    return _models(_version(MODELS / "pd_challenger.joblib", MODELS / "pd_scorecard.joblib", MODELS / "scorecard_points.csv"))
+
+
+@st.cache_resource(show_spinner=False)
+def _models(version: tuple) -> dict:
     from meridian.models.challenger import PDChallenger  # noqa: F401  (unpickling)
     from meridian.models.scorecard import Scorecard  # noqa: F401
     return {
@@ -40,9 +58,13 @@ def models() -> dict:
     }
 
 
-@st.cache_data(show_spinner=False)
 def headline() -> dict:
-    """Numbers used on several pages, computed once."""
+    """Numbers used on several pages, computed once per warehouse version."""
+    return _headline(_version(APP_DB))
+
+
+@st.cache_data(show_spinner=False)
+def _headline(version: tuple) -> dict:
     cube = q("select sum(funded_amount) funded, sum(loans) loans from portfolio_cube").iloc[0]
     live = q("select sum(outstanding) outstanding, sum(expected_loss) el, sum(expected_loss_downturn) el_dt from live_book_el").iloc[0]
     stress = q("select scenario, expected_loss from report_stress_test_results").set_index("scenario").expected_loss

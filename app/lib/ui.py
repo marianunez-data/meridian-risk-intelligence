@@ -98,6 +98,8 @@ def footer() -> None:
 
 
 def money(v: float, unit: str = "auto", cur: str = "$") -> str:
+    if v < 0:
+        return "-" + money(-v, unit, cur)
     a = abs(v)
     if unit == "auto" and a < 10_000:
         return f"{cur}{v:,.0f}"

@@ -45,28 +45,29 @@ fig.update_yaxes(tickprefix="$", ticksuffix="K", title="USD")
 fig.update_xaxes(title="Simulated hour")
 st.plotly_chart(ui.style_fig(fig, 360, f"Fraud value per hour: stopped versus lost ({model})"), width="stretch")
 
-c1, c2 = st.columns([1.3, 1], gap="large")
+st.subheader("Model comparison, test period")
+show = roi[["alerts", "frauds_caught", "fraud_value_caught", "fraud_value_missed", "false_alerts_per_1000_legit",
+            "saving_vs_rule_engine"]].reset_index()
+for c_ in ["fraud_value_caught", "fraud_value_missed", "saving_vs_rule_engine"]:
+    show[c_] = show[c_] / 1e6
+st.dataframe(show, hide_index=True, width="stretch", column_config={
+    "model": "Model", "alerts": st.column_config.NumberColumn("Alerts", format="%d"),
+    "frauds_caught": st.column_config.NumberColumn("Frauds caught", format="%d"),
+    "fraud_value_caught": st.column_config.NumberColumn("Stopped (USD M)", format="%.1f"),
+    "fraud_value_missed": st.column_config.NumberColumn("Lost (USD M)", format="%.1f"),
+    "false_alerts_per_1000_legit": st.column_config.NumberColumn("False alerts / 1,000", format="%.2f"),
+    "saving_vs_rule_engine": st.column_config.NumberColumn("Saving vs rules (USD M)", format="%.1f")})
+c1, c2 = st.columns([1, 1], gap="large")
 with c1:
-    st.subheader("Model comparison, test period")
-    show = roi[["alerts", "frauds_caught", "fraud_value_caught", "fraud_value_missed", "false_alerts_per_1000_legit",
-                "saving_vs_rule_engine"]].reset_index()
-    for c_ in ["fraud_value_caught", "fraud_value_missed", "saving_vs_rule_engine"]:
-        show[c_] = show[c_] / 1e6
-    st.dataframe(show, hide_index=True, width="stretch", column_config={
-        "model": "Model", "alerts": st.column_config.NumberColumn("Alerts", format="%d"),
-        "frauds_caught": st.column_config.NumberColumn("Frauds caught", format="%d"),
-        "fraud_value_caught": st.column_config.NumberColumn("Stopped (USD M)", format="%.1f"),
-        "fraud_value_missed": st.column_config.NumberColumn("Lost (USD M)", format="%.1f"),
-        "false_alerts_per_1000_legit": st.column_config.NumberColumn("False alerts / 1,000", format="%.2f"),
-        "saving_vs_rule_engine": st.column_config.NumberColumn("Saving vs rules (USD M)", format="%.1f")})
-with c2:
     st.subheader("Where fraud happens")
     fig = go.Figure(go.Bar(x=by_type.transaction_type.str.replace("_", " "), y=by_type.fraud_amount / 1e6, marker_color=ui.BLUE,
                            customdata=by_type.fraud_rate, hovertemplate="%{x}<br>$%{y:,.1f}M<br>fraud rate %{customdata:.2%}<extra></extra>"))
     fig.update_yaxes(tickprefix="$", ticksuffix="M", title="Fraud value (USD)")
     st.plotly_chart(ui.style_fig(fig, 300), width="stretch")
-ui.callout("<b>Reading the results honestly.</b> PaySim fraud almost always drains the sender's exact balance, which no "
-           "legitimate payment does, so the full model is near perfect and should be read as an upper bound. The restricted "
-           "model never sees balances and relies on amount, time of day and the receiving account's history: that is the "
-           "planning case. The Isolation Forest needs no fraud labels and suits the first weeks of a new product.")
+with c2:
+    st.subheader("Reading the results")
+    ui.callout("<b>Reading the results honestly.</b> PaySim fraud almost always drains the sender's exact balance, which no "
+               "legitimate payment does, so the full model is near perfect and should be read as an upper bound. The restricted "
+               "model never sees balances and relies on amount, time of day and the receiving account's history: that is the "
+               "planning case. The Isolation Forest needs no fraud labels and suits the first weeks of a new product.")
 ui.footer()

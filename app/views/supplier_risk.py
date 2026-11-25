@@ -83,6 +83,9 @@ with tab_lookup:
 with tab_universe:
     sectors = sorted(sup.sector_name.unique())
     pick = st.multiselect("Sectors", sectors, default=sectors)
+    if not pick:
+        st.info("Select at least one sector.")
+        st.stop()
     u = sup[sup.sector_name.isin(pick)]
     mix = u.groupby("sector_name").risk_tier.value_counts(normalize=True).unstack().reindex(columns=TIERS).fillna(0)
     fig = go.Figure()
