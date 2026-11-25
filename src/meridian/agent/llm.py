@@ -69,13 +69,30 @@ class GroqClient:
         return r.json()["choices"][0]["message"]["content"]
 
 
+@dataclass
+class FallbackClient:
+    """Try the primary provider; if it fails after its own retries, answer with the backup provider."""
+    primary: ChatClient
+    backup: ChatClient
+
+    @property
+    def name(self) -> str:
+        return f"{self.primary.name}, with {self.backup.name} as backup"
+
+    def chat(self, system: str, messages: list[dict]) -> str:
+        try:
+            return self.primary.chat(system, messages)
+        except requests.RequestException:
+            return self.backup.chat(system, messages)
+
+
 def client_from_env(secrets: dict | None = None) -> ChatClient | None:
-    """Pick a provider from Streamlit secrets or environment variables."""
+    """Pick providers from Streamlit secrets or environment variables. With both keys, Gemini answers and Groq backs it up."""
     def get(key: str) -> str | None:
         return (secrets or {}).get(key) or os.getenv(key)
 
-    if get("GEMINI_API_KEY"):
-        return GeminiClient(get("GEMINI_API_KEY"), get("GEMINI_MODEL") or "gemini-flash-latest")
-    if get("GROQ_API_KEY"):
-        return GroqClient(get("GROQ_API_KEY"), get("GROQ_MODEL") or "llama-3.3-70b-versatile")
-    return None
+    gemini = GeminiClient(get("GEMINI_API_KEY"), get("GEMINI_MODEL") or "gemini-flash-latest") if get("GEMINI_API_KEY") else None
+    groq = GroqClient(get("GROQ_API_KEY"), get("GROQ_MODEL") or "llama-3.3-70b-versatile") if get("GROQ_API_KEY") else None
+    if gemini and groq:
+        return FallbackClient(gemini, groq)
+    return gemini or groq

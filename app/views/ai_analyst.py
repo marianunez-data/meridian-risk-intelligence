@@ -47,6 +47,8 @@ else:
     for turn in st.session_state.chat:
         with st.chat_message(turn["role"]):
             st.markdown(turn["content"])
+            if turn.get("sources"):
+                st.caption("Sources: " + ", ".join(turn["sources"]))
             if turn.get("sql"):
                 with st.expander("SQL and data"):
                     st.code(turn["sql"], language="sql")
@@ -60,8 +62,7 @@ else:
             with st.spinner("Querying the warehouse"):
                 try:
                     res = RiskAnalyst(con.cursor(), llm, doc_index()).ask(question)
-                    answer = res.answer + (f"\n\n<span style='color:{ui.MUTED};font-size:0.8rem'>Sources: "
-                                           f"{', '.join(res.sources)}</span>" if res.sources else "")
+                    answer = res.answer
                 except Exception as err:  # noqa: BLE001
                     status = getattr(getattr(err, "response", None), "status_code", None)
                     hint = {400: "the API key or request was rejected", 401: "the API key is invalid",
@@ -71,8 +72,11 @@ else:
                     detail = f"{type(err).__name__} {status}" if status else type(err).__name__
                     res, answer = None, (f"The analyst could not complete this request ({detail}"
                                          f"{': ' + hint if hint else ''}). Please try again.")
-            st.markdown(answer, unsafe_allow_html=True)
-            turn = {"role": "assistant", "content": answer}
+            st.markdown(answer)
+            sources = list(res.sources) if res is not None and res.sources else []
+            if sources:
+                st.caption("Sources: " + ", ".join(sources))
+            turn = {"role": "assistant", "content": answer, "sources": sources}
             if res is not None and res.last_sql:
                 with st.expander("SQL and data"):
                     st.code(res.last_sql, language="sql")
