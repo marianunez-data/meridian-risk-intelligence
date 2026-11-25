@@ -22,7 +22,7 @@ class ChatClient(Protocol):
 @dataclass
 class GeminiClient:
     api_key: str
-    model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+    model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-flash-latest"))
     name: str = "Google Gemini"
 
     def chat(self, system: str, messages: list[dict]) -> str:
@@ -57,7 +57,7 @@ def client_from_env(secrets: dict | None = None) -> ChatClient | None:
         return (secrets or {}).get(key) or os.getenv(key)
 
     if get("GEMINI_API_KEY"):
-        return GeminiClient(get("GEMINI_API_KEY"), get("GEMINI_MODEL") or "gemini-2.5-flash")
+        return GeminiClient(get("GEMINI_API_KEY"), get("GEMINI_MODEL") or "gemini-flash-latest")
     if get("GROQ_API_KEY"):
         return GroqClient(get("GROQ_API_KEY"), get("GROQ_MODEL") or "llama-3.3-70b-versatile")
     return None

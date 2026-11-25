@@ -63,7 +63,13 @@ else:
                     answer = res.answer + (f"\n\n<span style='color:{ui.MUTED};font-size:0.8rem'>Sources: "
                                            f"{', '.join(res.sources)}</span>" if res.sources else "")
                 except Exception as err:  # noqa: BLE001
-                    res, answer = None, f"The analyst could not complete this request ({type(err).__name__}). Please try again."
+                    status = getattr(getattr(err, "response", None), "status_code", None)
+                    hint = {400: "the API key or request was rejected", 401: "the API key is invalid",
+                            403: "the API key has no access to this model", 404: "the model name is not available to this key",
+                            429: "the free-tier quota is used up; try again later"}.get(status, "")
+                    detail = f"{type(err).__name__} {status}" if status else type(err).__name__
+                    res, answer = None, (f"The analyst could not complete this request ({detail}"
+                                         f"{': ' + hint if hint else ''}). Please try again.")
             st.markdown(answer, unsafe_allow_html=True)
             turn = {"role": "assistant", "content": answer}
             if res is not None and res.last_sql:
