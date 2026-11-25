@@ -66,7 +66,8 @@ else:
                     status = getattr(getattr(err, "response", None), "status_code", None)
                     hint = {400: "the API key or request was rejected", 401: "the API key is invalid",
                             403: "the API key has no access to this model", 404: "the model name is not available to this key",
-                            429: "the free-tier quota is used up; try again later"}.get(status, "")
+                            429: "the free-tier quota is used up; try again later",
+                            503: "the model is temporarily overloaded; try again in a minute"}.get(status, "")
                     detail = f"{type(err).__name__} {status}" if status else type(err).__name__
                     res, answer = None, (f"The analyst could not complete this request ({detail}"
                                          f"{': ' + hint if hint else ''}). Please try again.")

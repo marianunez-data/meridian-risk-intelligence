@@ -7,10 +7,23 @@ your account can use.
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass, field
 from typing import Protocol
 
 import requests
+
+RETRYABLE = {429, 500, 502, 503, 504}
+
+
+def _post_with_retry(url: str, attempts: int = 3, **kwargs) -> requests.Response:
+    """POST with exponential backoff on rate limits and temporary overload (free tiers return 429 or 503)."""
+    for i in range(attempts):
+        r = requests.post(url, timeout=60, **kwargs)
+        if r.status_code not in RETRYABLE or i == attempts - 1:
+            return r
+        time.sleep(2 ** (i + 1))
+    return r
 
 
 class ChatClient(Protocol):
@@ -24,6 +37,7 @@ class GeminiClient:
     api_key: str
     model: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-flash-latest"))
     name: str = "Google Gemini"
+    fallback_model: str | None = "gemini-3.5-flash-lite"
 
     def chat(self, system: str, messages: list[dict]) -> str:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
@@ -31,7 +45,11 @@ class GeminiClient:
                     for m in messages]
         body = {"system_instruction": {"parts": [{"text": system}]}, "contents": contents,
                 "generationConfig": {"temperature": 0.0, "responseMimeType": "application/json"}}
-        r = requests.post(url, params={"key": self.api_key}, json=body, timeout=60)
+        r = _post_with_retry(url, params={"key": self.api_key}, json=body)
+        if r.status_code in RETRYABLE and self.fallback_model and self.fallback_model != self.model:
+            # The free tier sometimes reports the newest model as overloaded: answer with the lighter model instead.
+            url = url.replace(f"/models/{self.model}:", f"/models/{self.fallback_model}:")
+            r = _post_with_retry(url, params={"key": self.api_key}, json=body)
         r.raise_for_status()
         return r.json()["candidates"][0]["content"]["parts"][0]["text"]
 
@@ -43,10 +61,10 @@ class GroqClient:
     name: str = "Groq"
 
     def chat(self, system: str, messages: list[dict]) -> str:
-        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
-                          headers={"Authorization": f"Bearer {self.api_key}"},
-                          json={"model": self.model, "temperature": 0.0, "response_format": {"type": "json_object"},
-                                "messages": [{"role": "system", "content": system}, *messages]}, timeout=60)
+        r = _post_with_retry("https://api.groq.com/openai/v1/chat/completions",
+                             headers={"Authorization": f"Bearer {self.api_key}"},
+                             json={"model": self.model, "temperature": 0.0, "response_format": {"type": "json_object"},
+                                   "messages": [{"role": "system", "content": system}, *messages]})
         r.raise_for_status()
         return r.json()["choices"][0]["message"]["content"]
 
