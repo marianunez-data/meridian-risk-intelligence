@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest ruff dbt-core==1.12.7 dbt-duckdb==1.11.1
+          pip install -e .
+
+      - name: Lint
+        run: ruff check src scripts app tests
+
+      - name: Unit tests (cleaning, WoE, guardrails, economics, stress, app warehouse)
+        run: pytest -q
+
+      - name: dbt project compiles
+        working-directory: warehouse
+        env:
+          MERIDIAN_DATA: /tmp
+        run: |
+          mkdir -p /tmp/warehouse
+          dbt parse --profiles-dir .
+
+      - name: Dashboard pages render without errors
+        run: python tests/smoke_app.py
