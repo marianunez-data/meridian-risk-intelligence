@@ -32,7 +32,7 @@ select
     t.origin_balance_before,
     t.destination_balance_before,
     t.amount / nullif(t.origin_balance_before, 0)                         as amount_to_origin_balance,
-    (t.origin_balance_before > 0 and abs(t.amount - t.origin_balance_before) <= 1)::int
+    (t.origin_balance_before > 0 and abs(t.amount - t.origin_balance_before) <= 0.01)::int
                                                                           as drains_origin_account,
     (t.origin_balance_before = 0)::int                                    as origin_balance_zero,
     (t.destination_balance_before = 0)::int                               as destination_balance_zero,
