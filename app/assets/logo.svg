@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="96" viewBox="0 0 560 96">
+  <g fill="none" stroke-width="5" stroke-linecap="round">
+    <circle cx="48" cy="48" r="38" stroke="#0d366b"/>
+    <path d="M48 10 C 24 30, 24 66, 48 86" stroke="#2a78d6"/>
+    <path d="M48 10 C 72 30, 72 66, 48 86" stroke="#2a78d6"/>
+    <path d="M10 48 H 86" stroke="#0d366b"/>
+  </g>
+  <text x="104" y="50" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="38" font-weight="700" fill="#0b0b0b" letter-spacing="-0.5">Meridian Capital</text>
+  <text x="105" y="82" font-family="Inter, Helvetica Neue, Arial, sans-serif" font-size="19" font-weight="500" fill="#52514e" letter-spacing="0.3">Counterparty Risk Intelligence</text>
+</svg>
