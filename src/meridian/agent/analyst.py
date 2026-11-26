@@ -38,6 +38,7 @@ Rules:
 - Aggregate tables must be summed before dividing (ratio of sums, not average of ratios).
 - If a question cannot be answered from the tools, say so plainly. Never guess numbers.
 - Final answers: 2 to 5 short sentences, lead with the number, state the period and unit, no emojis.
+- Write money like a finance report: $2.97B, $475.0M, $1,746 (B for billions, M for millions), and rates as percentages with one decimal (12.2%).
 
 Warehouse catalog:
 {schema}
