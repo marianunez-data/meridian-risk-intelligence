@@ -34,12 +34,12 @@ Notes: free apps sleep after 12 hours without visits and wake on the next visit 
 
 ## 3. Enable the AI Risk Analyst (optional, free)
 
-The dashboard works fully without a key; the analyst page then shows the governed SQL console. To enable natural-language questions, add one free key to the app's secrets:
+The dashboard works fully without a key; the analyst page then shows the governed SQL console. To enable natural-language questions, add a free key to the app's secrets. With both keys, Gemini answers and Groq takes over automatically if Gemini is busy:
 
 - **Google AI Studio (Gemini):** create a key at aistudio.google.com, then set `GEMINI_API_KEY`.
 - **Groq:** create a key at console.groq.com, then set `GROQ_API_KEY`.
 
-Model names change over time. If the default model is not available to your account, set `GEMINI_MODEL` or `GROQ_MODEL` to one that is.
+Model names change over time. The default is `gemini-flash-latest`; if it is busy or not available to your account, set `GEMINI_MODEL` (for example `gemini-3.5-flash-lite`) or `GROQ_MODEL`. After changing code in `src/` or `models/`, use **Reboot app** so Streamlit reloads it.
 
 To score the analyst on the 16-question evaluation set:
 
@@ -49,7 +49,6 @@ GEMINI_API_KEY=... make eval-agent      # writes reports/agent_eval_live.csv
 
 ## 4. Final touches
 
-- In `README.md`, fill in the **Author** section with your name and links.
 - In the Streamlit secrets, set `GITHUB_REPO_URL` so the Methodology page links to the repository.
 - Pin the repository on your GitHub profile and add the topics: `credit-risk`, `data-science`, `dbt`, `duckdb`, `lightgbm`, `shap`, `streamlit`, `llm-agent`, `text-to-sql`, `fraud-detection`.
 

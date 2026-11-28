@@ -25,7 +25,7 @@ warehouse:  ## Build silver and gold layers with dbt and run all 43 data tests
 docs:  ## Generate and serve the dbt documentation site (lineage graph, column docs)
 	cd warehouse && dbt docs generate --profiles-dir . && dbt docs serve --profiles-dir .
 
-notebooks:  ## Execute every notebook in order (about 45 minutes, most of it in 07)
+notebooks:  ## Execute every notebook in order (about 1 hour, most of it in 07 and 10)
 	for nb in notebooks/*.ipynb; do \
 		$(PY) -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=5400 $$nb || exit 1; \
 	done

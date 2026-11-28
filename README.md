@@ -3,7 +3,7 @@
 **End-to-end credit, fraud and supplier risk analytics on 2.26 million real loans: from raw public data to a SQL warehouse, bank-standard models, a stress test, an interactive dashboard and a guarded AI analyst.**
 
 [![CI](https://github.com/marianunez-data/meridian-risk-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/marianunez-data/meridian-risk-intelligence/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/Python-3.13-2a78d6)
+![Python](https://img.shields.io/badge/Python-3.12%20%7C%203.13-2a78d6)
 ![dbt](https://img.shields.io/badge/dbt-DuckDB-2a78d6)
 ![Streamlit](https://img.shields.io/badge/App-Streamlit-2a78d6)
 ![License](https://img.shields.io/badge/License-MIT-2a78d6)
@@ -153,7 +153,7 @@ make setup        # dependencies + package
 make data         # download raw data (about 3 GB)
 make bronze       # raw -> Parquet
 make warehouse    # dbt build: silver, gold, 43 tests
-make notebooks    # execute all notebooks (about 45 minutes)
+make notebooks    # execute all notebooks (about 1 hour)
 make app-data     # export the 27 MB app warehouse
 make app          # open the dashboard at http://localhost:8501
 ```

@@ -23,7 +23,7 @@ All data is public. The full raw files (about 3.2 GB) are **not stored in this r
 | File | Rows | Content |
 |---|---|---|
 | `lending_club_sample_10k.csv` | 10,000 | Random loans with the main application fields and the outcome, exactly as delivered by the source |
-| `paysim_sample_10k.csv` | 10,000 | Random transactions with the fraud label |
+| `paysim_sample_10k.csv` | 10,000 | Random transactions with the fraud label, in PaySim's original simulated units (the warehouse converts them at 100 units = USD 1) |
 | `supplier_scores.csv` | 1,351 | Altman Z'' score, zone, red flags and risk tier per company (output of notebook 11) |
 | `fred_macro_since_2005.csv` | about 6,000 | Long format: series_id, observation_date, value |
 
